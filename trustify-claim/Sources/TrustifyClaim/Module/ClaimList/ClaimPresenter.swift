@@ -32,6 +32,12 @@ public class ClaimPresenter: ClaimPresenterProtocol {
             .receive(on: RunLoop.main)
             .sink(receiveCompletion: { [weak self] completion in
                 self?.view?.setLoading(isLoading: false)
+                switch(completion) {
+                case .finished:
+                    self?.view?.setError(isError: false)
+                case .failure:
+                    self?.view?.setError(isError: true)
+                }
             }, receiveValue: { [weak self] claims in
                 self?.claimList = claims
                 self?.view?.updateClaim(result: claims)

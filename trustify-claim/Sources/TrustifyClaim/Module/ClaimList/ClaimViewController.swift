@@ -12,6 +12,7 @@ public protocol ClaimViewProtocol: AnyObject {
     
     func updateClaim(result: [ClaimModel])
     func setLoading(isLoading: Bool)
+    func setError(isError: Bool)
 }
 
 public class ClaimViewController: UIViewController {
@@ -31,6 +32,7 @@ public class ClaimViewController: UIViewController {
     }()
     
     private let refreshControl = UIRefreshControl()
+    private let errorView = ErrorView()
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,6 +46,7 @@ public class ClaimViewController: UIViewController {
         view.backgroundColor = .systemBackground
         setupTableView(mainTableView)
         setupRefreshControl()
+        setupErrorView()
     }
     
     private func setupTableView(_ tableView: UITableView) {
@@ -60,6 +63,7 @@ public class ClaimViewController: UIViewController {
     private func setupConstraints() {
         self.view.addSubview(mainTableView)
         self.view.addSubview(loadingIndicator)
+        self.view.addSubview(errorView)
         
         NSLayoutConstraint.activate([
             mainTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -69,6 +73,14 @@ public class ClaimViewController: UIViewController {
         ])
         
         loadingIndicator.center = view.center
+    }
+    
+    private func setupErrorView() {
+        errorView.isHidden = true
+        errorView.frame = view.bounds
+        errorView.onRetry = { [weak self] in
+            self?.presenter?.getClaimList()
+        }
     }
     
     private func setupRefreshControl() {
@@ -97,6 +109,11 @@ extension ClaimViewController: ClaimViewProtocol {
             loadingIndicator.isHidden = true
             refreshControl.endRefreshing()
         }
+    }
+    
+    public func setError(isError: Bool) {
+        mainTableView.isHidden = isError
+        errorView.isHidden = !isError
     }
 }
 
