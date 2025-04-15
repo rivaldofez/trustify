@@ -41,21 +41,21 @@ private struct HTTPHeader {
     static let authorization = "Authorization"
 }
 
-struct HttpRequest: RequestBuilder {
+public struct HttpRequest: RequestBuilder {
     
-    var baseURL: BaseURLType
-    var version: VersionType
-    var path: String?
-    var methodType: HTTPMethod
-    var queryParams: [String: String]?
-    var queryParamsEncoding: URLEncoding?
-    var headers: [String: String]?
-    var parameters: [String: Any]?
-    var bodyEncoding: BodyEncoding?
-    var cachePolicy: URLRequest.CachePolicy?
-    var timeoutInterval: TimeInterval?
+    public var baseURL: BaseURLType
+    public var version: VersionType
+    public var path: String?
+    public var methodType: HTTPMethod
+    public var queryParams: [String: String]?
+    public var queryParamsEncoding: URLEncoding?
+    public var headers: [String: String]?
+    public var parameters: [String: Any]?
+    public var bodyEncoding: BodyEncoding?
+    public var cachePolicy: URLRequest.CachePolicy?
+    public var timeoutInterval: TimeInterval?
 
-    init(request: NetworkTarget) {
+    public init(request: NetworkTarget) {
         self.baseURL = request.baseURL
         self.version = request.version
         self.path = request.path
@@ -64,7 +64,7 @@ struct HttpRequest: RequestBuilder {
         self.queryParamsEncoding = request.queryParamsEncoding
     }
 
-    internal var pathAppendedURL: URL {
+    public  var pathAppendedURL: URL {
         var url = baseURL.value
         url.appendPathComponent(version.value)
         if let path = path {
@@ -73,7 +73,7 @@ struct HttpRequest: RequestBuilder {
         return url
     }
 
-    internal func setQuery(to urlRequest: inout URLRequest) {
+    public  func setQuery(to urlRequest: inout URLRequest) {
         guard let url = urlRequest.url else { return }
         var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)
         
@@ -97,7 +97,7 @@ struct HttpRequest: RequestBuilder {
         urlRequest.url = urlComponents?.url
     }
 
-    internal func encodedBody() -> Data? {
+    public  func encodedBody() -> Data? {
         guard let bodyEncoding = bodyEncoding else { return nil }
         
         switch bodyEncoding {
@@ -108,7 +108,7 @@ struct HttpRequest: RequestBuilder {
         }
     }
 
-    func buildURLRequest() -> URLRequest {
+    public func buildURLRequest() -> URLRequest {
         var urlRequest = URLRequest(url: pathAppendedURL)
         urlRequest.httpMethod = methodType.rawValue
         urlRequest.allHTTPHeaderFields = headers

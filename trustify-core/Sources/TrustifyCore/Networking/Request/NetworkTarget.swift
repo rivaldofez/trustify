@@ -8,7 +8,7 @@
 import Foundation
 import Alamofire
 
-protocol NetworkTarget {
+public protocol NetworkTarget {
     var baseURL: BaseURLType { get }
     var version: VersionType { get }
     var path: String? { get }

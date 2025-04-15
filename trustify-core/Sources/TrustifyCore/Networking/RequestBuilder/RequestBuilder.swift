@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol RequestBuilder: NetworkTarget {
+public protocol RequestBuilder: NetworkTarget {
     init(request: NetworkTarget)
     var pathAppendedURL: URL { get }
     func setQuery(to urlRequest: inout URLRequest)

@@ -31,7 +31,7 @@ extension Dictionary where Key == String, Value == Any {
         if let bodyData = output.data(using: .utf8) {
             return bodyData
         } else {
-            throw NetworkError.unknownError
+            throw CustomError.unknownError
         }
     }
 }

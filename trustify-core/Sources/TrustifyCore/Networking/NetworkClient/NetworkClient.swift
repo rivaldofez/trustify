@@ -11,15 +11,15 @@ import Alamofire
 
 typealias BaseAPIProtocol = NetworkClientProtocol
 
-typealias AnyPublisherResult<M> = AnyPublisher<M, NetworkError>
+typealias AnyPublisherResult<M> = AnyPublisher<M, CustomError>
 
-protocol NetworkClientProtocol: AnyObject {
+public protocol NetworkClientProtocol: AnyObject {
     @available(iOS 13.0, *)
     @discardableResult
     func perform<M: Decodable, T>(with request: RequestBuilder,
                                   decoder: JSONDecoder,
                                   scheduler: T,
-                                  responseObject type: M.Type) -> AnyPublisher<M, NetworkError> where M: Decodable, T: Scheduler
+                                  responseObject type: M.Type) -> AnyPublisher<M, CustomError> where M: Decodable, T: Scheduler
 }
 
 protocol Logging {
@@ -27,7 +27,7 @@ protocol Logging {
     func logResponse(response: URLResponse?, data: Data?)
 }
 
-final class NetworkClient: NetworkClientProtocol {
+public final class NetworkClient: NetworkClientProtocol {
     var session: URLSession {
         let configuration = URLSessionConfiguration.default
         configuration.waitsForConnectivity = true
@@ -41,15 +41,15 @@ final class NetworkClient: NetworkClientProtocol {
     }
     
     @discardableResult
-    func perform<M, T>(with request: RequestBuilder,
+    public func perform<M, T>(with request: RequestBuilder,
                        decoder: JSONDecoder,
                        scheduler: T,
-                       responseObject type: M.Type) -> AnyPublisher<M, NetworkError> where M: Decodable, T: Scheduler {
+                       responseObject type: M.Type) -> AnyPublisher<M, CustomError> where M: Decodable, T: Scheduler {
         let urlRequest = request.buildURLRequest()
         self.logging.logRequest(request: urlRequest)
         
         if let reachability = NetworkReachabilityManager(), !reachability.isReachable {
-            return Fail(error: NetworkError.noNetwork)
+            return Fail(error: CustomError.noNetwork)
                 .eraseToAnyPublisher()
         }
         
@@ -61,23 +61,27 @@ final class NetworkClient: NetworkClientProtocol {
             .publishDecodable(type: M.self)
             .value()
             .mapError { error in
-                return NetworkError.alamofire(error)
+                return CustomError.alamofire(error)
             }
             .eraseToAnyPublisher()
     }
 }
 
-class NetworkClientManager<Target: RequestBuilder> {
+open class NetworkClientManager<Target: RequestBuilder> {
     
-    typealias AnyPublisherResult<M> = AnyPublisher<M, NetworkError>
+    public typealias AnyPublisherResult<M> = AnyPublisher<M, CustomError>
     
-    private let clientURLSession: NetworkClientProtocol
+    public let clientURLSession: NetworkClientProtocol
     
-    public init(clientURLSession: NetworkClientProtocol = NetworkClient()) {
+    init(clientURLSession: NetworkClientProtocol = NetworkClient()) {
         self.clientURLSession = clientURLSession
     }
     
-    func request<M, T>(request: Target,
+    public init() {
+        self.clientURLSession = NetworkClient()
+    }
+    
+    open func request<M, T>(request: Target,
                        decoder: JSONDecoder = .init(),
                        scheduler: T,
                        responseObject type: M.Type) -> AnyPublisherResult<M> where M: Decodable, T: Scheduler {

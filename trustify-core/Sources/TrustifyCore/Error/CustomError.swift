@@ -8,7 +8,7 @@
 import Foundation
 import Alamofire
 
-enum NetworkError: Error {
+public enum CustomError: Error {
     case general
     case timeout
     case notFound

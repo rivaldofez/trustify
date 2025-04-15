@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum BaseURLType {
+public enum BaseURLType {
     case production
     case staging
 
@@ -23,7 +23,7 @@ enum BaseURLType {
     }
 }
 
-enum VersionType {
+public enum VersionType {
     case none
     var value: String {
         switch self {
