@@ -13,7 +13,9 @@ public protocol ClaimPresenterProtocol {
     var interactor: ClaimInteractorProtocol? { get set }
     var router: ClaimRouterProtocol? { get set }
     
+    var claimList: [ClaimModel] { get set }
     func getClaimList()
+    func gotoDetailClaim(claim: ClaimModel)
 }
 
 public class ClaimPresenter: ClaimPresenterProtocol {
@@ -22,6 +24,7 @@ public class ClaimPresenter: ClaimPresenterProtocol {
     public var router: ClaimRouterProtocol?
     public var cancellables = Set<AnyCancellable>()
     
+    public var claimList: [ClaimModel] = []
     
     public func getClaimList() {
         interactor?.getClaimList()
@@ -29,9 +32,14 @@ public class ClaimPresenter: ClaimPresenterProtocol {
             .sink(receiveCompletion: { completion in
                 
             }, receiveValue: { claims in
-                print("LOGDEBUG: claim list \(claims)")
+                self.claimList = claims
+                self.view?.updateClaim(result: claims)
             })
             .store(in: &cancellables)
         
+    }
+    
+    public func gotoDetailClaim(claim: ClaimModel) {
+        router?.gotoDetailClaim(with: claim)
     }
 }

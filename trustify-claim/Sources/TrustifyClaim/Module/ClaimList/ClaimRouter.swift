@@ -11,6 +11,7 @@ import UIKit
 public protocol ClaimRouterProtocol {
     var entry: (UIViewController & ClaimViewProtocol)? { get set }
     static func start() -> ClaimRouterProtocol
+    func gotoDetailClaim(with claim: ClaimModel)
 }
 
 public class ClaimRouter: ClaimRouterProtocol {
@@ -30,4 +31,11 @@ public class ClaimRouter: ClaimRouterProtocol {
         router.entry = view
         return router
     }
+    
+    public func gotoDetailClaim(with claim: ClaimModel) {
+        let router = DetailClaimRouter.start(with: claim)
+        guard let destinationView = router.entry, let currentView = self.entry else { return }
+        currentView.navigationController?.pushViewController(destinationView, animated: true)
+    }
+    
 }
