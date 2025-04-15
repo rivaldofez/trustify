@@ -14,6 +14,7 @@ public protocol ClaimPresenterProtocol {
     var router: ClaimRouterProtocol? { get set }
     
     var claimList: [ClaimModel] { get set }
+    var filteredClaimList: [ClaimModel] { get set }
     func getClaimList()
     func gotoDetailClaim(claim: ClaimModel)
 }
@@ -25,6 +26,7 @@ public class ClaimPresenter: ClaimPresenterProtocol {
     public var cancellables = Set<AnyCancellable>()
     
     public var claimList: [ClaimModel] = []
+    public var filteredClaimList: [ClaimModel] = []
     
     public func getClaimList() {
         view?.setLoading(isLoading: true)

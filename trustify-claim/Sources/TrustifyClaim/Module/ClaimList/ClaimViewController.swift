@@ -33,6 +33,12 @@ public class ClaimViewController: UIViewController {
     
     private let refreshControl = UIRefreshControl()
     private let errorView = ErrorView()
+    private let searchController = UISearchController(searchResultsController: nil)
+    
+    private var isSearching: Bool {
+        return searchController.isActive && !(searchController.searchBar.text?.isEmpty ?? true)
+    }
+    
     
     public override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +53,15 @@ public class ClaimViewController: UIViewController {
         setupTableView(mainTableView)
         setupRefreshControl()
         setupErrorView()
+        setupSearchController()
+    }
+    
+    private func setupSearchController() {
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Claims"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
     }
     
     private func setupTableView(_ tableView: UITableView) {
@@ -119,14 +134,15 @@ extension ClaimViewController: ClaimViewProtocol {
 
 extension ClaimViewController: UITableViewDelegate, UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return presenter?.claimList.count ?? 0
+        guard let presenter = self.presenter else { return 0}
+        return isSearching ? presenter.filteredClaimList.count : presenter.claimList.count
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ClaimTableViewCell.identifier, for: indexPath) as? ClaimTableViewCell, let presenter = self.presenter else { return UITableViewCell() }
         
-        let item = presenter.claimList[indexPath.row]
-        cell.configure(with: item.title, description: item.body, id: "\(item.id)")
+        let claim = isSearching ? presenter.filteredClaimList[indexPath.row] : presenter.claimList[indexPath.row]
+        cell.configure(with: claim.title, description: claim.body, id: "\(claim.id)")
         
         return cell
     }
@@ -135,5 +151,23 @@ extension ClaimViewController: UITableViewDelegate, UITableViewDataSource {
         guard let item = presenter?.claimList[indexPath.row] else { return }
         
         presenter?.gotoDetailClaim(claim: item)
+    }
+}
+
+extension ClaimViewController: UISearchResultsUpdating {
+    public func updateSearchResults(for searchController: UISearchController) {
+        guard var presenter = self.presenter, let query = searchController.searchBar.text?.lowercased(), !query.isEmpty else {
+            
+            presenter?.filteredClaimList = []
+            mainTableView.reloadData()
+            return
+        }
+
+        presenter.filteredClaimList = presenter.claimList.filter { claim in
+            claim.title.lowercased().contains(query) ||
+            claim.body.lowercased().contains(query)
+        }
+
+        mainTableView.reloadData()
     }
 }
