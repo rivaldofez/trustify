@@ -11,11 +11,18 @@ let package = Package(
             name: "TrustifyCore",
             targets: ["TrustifyCore"]),
     ],
+    dependencies: [
+        .package(url: "https://github.com/Alamofire/Alamofire.git", branch: "master"),
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "TrustifyCore"),
+            name: "TrustifyCore",
+            dependencies: [
+                .product(name: "Alamofire", package: "Alamofire")
+            ]
+        ),
         .testTarget(
             name: "TrustifyCoreTests",
             dependencies: ["TrustifyCore"]),
