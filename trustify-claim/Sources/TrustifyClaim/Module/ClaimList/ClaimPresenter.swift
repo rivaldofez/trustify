@@ -27,13 +27,14 @@ public class ClaimPresenter: ClaimPresenterProtocol {
     public var claimList: [ClaimModel] = []
     
     public func getClaimList() {
+        view?.setLoading(isLoading: true)
         interactor?.getClaimList()
             .receive(on: RunLoop.main)
-            .sink(receiveCompletion: { completion in
-                
-            }, receiveValue: { claims in
-                self.claimList = claims
-                self.view?.updateClaim(result: claims)
+            .sink(receiveCompletion: { [weak self] completion in
+                self?.view?.setLoading(isLoading: false)
+            }, receiveValue: { [weak self] claims in
+                self?.claimList = claims
+                self?.view?.updateClaim(result: claims)
             })
             .store(in: &cancellables)
         

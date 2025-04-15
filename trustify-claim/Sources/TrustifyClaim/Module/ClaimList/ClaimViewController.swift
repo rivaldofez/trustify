@@ -1,6 +1,6 @@
 //
 //  ClaimViewController.swift
-//  
+//
 //
 //  Created by Rivaldo Fernandes on 15/04/25.
 //
@@ -11,6 +11,7 @@ public protocol ClaimViewProtocol: AnyObject {
     var presenter: ClaimPresenterProtocol? { get set }
     
     func updateClaim(result: [ClaimModel])
+    func setLoading(isLoading: Bool)
 }
 
 public class ClaimViewController: UIViewController {
@@ -23,9 +24,16 @@ public class ClaimViewController: UIViewController {
         return tableView
     }()
     
+    private var loadingIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.startAnimating()
+        return indicator
+    }()
+    
+    private let refreshControl = UIRefreshControl()
+    
     public override func viewDidLoad() {
         super.viewDidLoad()
-        
         presenter?.getClaimList()
         setupConstraints()
         setupView()
@@ -35,6 +43,7 @@ public class ClaimViewController: UIViewController {
         title = "Claim List"
         view.backgroundColor = .systemBackground
         setupTableView(mainTableView)
+        setupRefreshControl()
     }
     
     private func setupTableView(_ tableView: UITableView) {
@@ -45,10 +54,12 @@ public class ClaimViewController: UIViewController {
         tableView.estimatedRowHeight = 120
         tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 8, right: 0)
         tableView.separatorStyle = .none
+        tableView.isHidden = true
     }
     
     private func setupConstraints() {
         self.view.addSubview(mainTableView)
+        self.view.addSubview(loadingIndicator)
         
         NSLayoutConstraint.activate([
             mainTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -56,12 +67,36 @@ public class ClaimViewController: UIViewController {
             mainTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             mainTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+        
+        loadingIndicator.center = view.center
+    }
+    
+    private func setupRefreshControl() {
+        refreshControl.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
+        mainTableView.refreshControl = refreshControl
+    }
+    
+    @objc private func didPullToRefresh() {
+        presenter?.getClaimList()
     }
 }
 
 extension ClaimViewController: ClaimViewProtocol {
     public func updateClaim(result: [ClaimModel]) {
         mainTableView.reloadData()
+    }
+    
+    public func setLoading(isLoading: Bool) {
+        if isLoading {
+            if presenter?.claimList.isEmpty == true {
+                mainTableView.isHidden = true
+            }
+            loadingIndicator.isHidden = false
+        } else {
+            mainTableView.isHidden = false
+            loadingIndicator.isHidden = true
+            refreshControl.endRefreshing()
+        }
     }
 }
 

@@ -3,10 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7E712B762DAE31F5002A7449 /* TrustifyClaim in Frameworks */ = {isa = PBXBuildFile; productRef = 7E712B752DAE31F5002A7449 /* TrustifyClaim */; };
 		7EB68F612DAE05BA00DA0EDC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EB68F602DAE05BA00DA0EDC /* AppDelegate.swift */; };
 		7EB68F632DAE05BA00DA0EDC /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EB68F622DAE05BA00DA0EDC /* SceneDelegate.swift */; };
 		7EB68F652DAE05BA00DA0EDC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EB68F642DAE05BA00DA0EDC /* ViewController.swift */; };
@@ -54,6 +55,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7E712B762DAE31F5002A7449 /* TrustifyClaim in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -140,6 +142,9 @@
 			dependencies = (
 			);
 			name = Trustify;
+			packageProductDependencies = (
+				7E712B752DAE31F5002A7449 /* TrustifyClaim */,
+			);
 			productName = Trustify;
 			productReference = 7EB68F5D2DAE05BA00DA0EDC /* Trustify.app */;
 			productType = "com.apple.product-type.application";
@@ -212,6 +217,9 @@
 				Base,
 			);
 			mainGroup = 7EB68F542DAE05BA00DA0EDC;
+			packageReferences = (
+				7E4452112DAE2E1600A47160 /* XCLocalSwiftPackageReference "../trustify-claim" */,
+			);
 			productRefGroup = 7EB68F5E2DAE05BA00DA0EDC /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -593,6 +601,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		7E4452112DAE2E1600A47160 /* XCLocalSwiftPackageReference "../trustify-claim" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../trustify-claim";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7E712B752DAE31F5002A7449 /* TrustifyClaim */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TrustifyClaim;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7EB68F552DAE05BA00DA0EDC /* Project object */;
 }
